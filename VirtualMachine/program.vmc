@@ -1,0 +1,9 @@
+﻿# Loops from I to N, printing I on each iteration.
+
+SET I 0
+SET N 5
+
+LBL LOOP
+OUT I
+ADD I K1 I
+JLE I N LOOP
