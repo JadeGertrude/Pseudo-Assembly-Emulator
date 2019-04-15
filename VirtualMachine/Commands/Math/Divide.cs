@@ -2,14 +2,14 @@
 
 namespace VirtualMachine.Commands
 {
-    public class AddCommand : ICommand
+    public class DivideCommand : ICommand
     {
         private Register RegisterOne { get; set; }
         private Register RegisterTwo { get; set; }
         private Register RegisterOut { get; set; }
 
 
-        public AddCommand(Register registerOne, Register registerTwo, Register registerOut)
+        public DivideCommand(Register registerOne, Register registerTwo, Register registerOut)
         {
             RegisterOne = registerOne;
             RegisterTwo = registerTwo;
@@ -18,12 +18,7 @@ namespace VirtualMachine.Commands
 
         public void Execute(ProgramFile program)
         {
-            RegisterOut.Value = (byte)(RegisterOne.Value + RegisterTwo.Value);
-        }
-
-        public void Dump()
-        {
-            Console.WriteLine($"ADD {RegisterOne.Name} {RegisterTwo.Name} {RegisterOut.Name}");
+            RegisterOut.Value = RegisterOne.Value / RegisterTwo.Value;
         }
     }
 }

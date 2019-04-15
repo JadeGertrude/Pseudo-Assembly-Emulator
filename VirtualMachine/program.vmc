@@ -1,9 +1,21 @@
-﻿# Loops from I to N, printing I on each iteration.
+﻿str: STRING_EQUAL A is equal to B
+str: STRING_NOT_EQUAL A is not equal to B
+str: STRING_EXIT Goodbye!
 
-SET I 0
-SET N 5
+SET A 1
+SET B 1
 
-LBL LOOP
-OUT I
-ADD I K1 I
-JLE I N LOOP
+JIE A == B EQUAL
+JMP NOT_EQUAL
+
+EQUAL:
+OUT STRING_EQUAL
+JMP EXIT
+
+NOT_EQUAL:
+OUT STRING_NOT_EQUAL
+JMP EXIT
+
+
+EXIT:
+OUT STRING_EXIT

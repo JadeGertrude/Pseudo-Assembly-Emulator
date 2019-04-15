@@ -43,15 +43,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\Math\Divide.cs" />
+    <Compile Include="Commands\Math\Subtract.cs" />
+    <Compile Include="Commands\Math\Multiply.cs" />
     <Compile Include="Commands\Copy.cs" />
     <Compile Include="Commands\JumpIfCommand.cs" />
     <Compile Include="Commands\GoToCommand.cs" />
-    <Compile Include="Commands\Label.cs" />
     <Compile Include="Commands\Out.cs" />
     <Compile Include="Commands\Halt.cs" />
+    <Compile Include="Concepts\Label.cs" />
     <Compile Include="Firmware\ProgramFile.cs" />
     <Compile Include="Commands\Set.cs" />
-    <Compile Include="Commands\Add.cs" />
+    <Compile Include="Commands\Math\Add.cs" />
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Hardware\Processor.cs" />
     <Compile Include="Program.cs" />

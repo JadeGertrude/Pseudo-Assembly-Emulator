@@ -14,10 +14,5 @@ namespace VirtualMachine.Commands
             Console.WriteLine("PAUSED");
             Console.ReadKey(true);
         }
-
-        public void Dump()
-        {
-            Console.WriteLine($"HLT");
-        }
     }
 }

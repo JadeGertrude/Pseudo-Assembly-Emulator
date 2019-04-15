@@ -9,7 +9,8 @@ namespace VirtualMachine.Commands
         Equal,
         GreaterThanOrEqual,
         GreaterThan,
-        NotEqual
+        NotEqual,
+        Undefined
     }
 
     public class JumpIfCommand : ICommand
@@ -74,39 +75,6 @@ namespace VirtualMachine.Commands
                         program.Jump(Label);
                     }
 
-                    break;
-            }
-        }
-
-        public void Dump()
-        {
-            switch (Condition)
-            {
-                case JumpCondition.LessThan:
-                    Console.WriteLine($"JLT {RegisterOne.Name} {RegisterTwo.Name} {Label}");
-
-                    break;
-                case JumpCondition.LessThanOrEqual:
-                    Console.WriteLine($"JLE {RegisterOne.Name} {RegisterTwo.Name} {Label}");
-
-                    break;
-                case JumpCondition.Equal:
-                    Console.WriteLine($"JEQ {RegisterOne.Name} {RegisterTwo.Name} {Label}");
-
-                    break;
-                case JumpCondition.GreaterThanOrEqual:
-                    Console.WriteLine($"JGE {RegisterOne.Name} {RegisterTwo.Name} {Label}");
-
-                    break;
-                case JumpCondition.GreaterThan:
-                    Console.WriteLine($"JGT {RegisterOne.Name} {RegisterTwo.Name} {Label}");
-
-                    break;
-                case JumpCondition.NotEqual:
-                    Console.WriteLine($"JNE {RegisterOne.Name} {RegisterTwo.Name} {Label}");
-
-                    break;
-                default:
                     break;
             }
         }

@@ -4,11 +4,11 @@ namespace VirtualMachine
 {
     public class Register
     {
-        private byte m_Value;
+        private int m_Value;
 
         public string Name { get; private set; }
 
-        public byte Value {
+        public int Value {
             get { return m_Value; }
             set {
                 if (ReadOnly)
@@ -29,7 +29,7 @@ namespace VirtualMachine
             Name = name;
         }
 
-        public Register(string name, byte value, bool readOnly = true)
+        public Register(string name, int value, bool readOnly = true)
         {
             Name = name;
             Value = value;

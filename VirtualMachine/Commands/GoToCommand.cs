@@ -16,10 +16,5 @@ namespace VirtualMachine.Commands
         {
             program.Jump(Label);
         }
-
-        public void Dump()
-        {
-            Console.WriteLine($"JMP {Label}");
-        }
     }
 }

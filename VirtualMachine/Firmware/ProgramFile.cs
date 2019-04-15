@@ -8,7 +8,8 @@ namespace VirtualMachine
         public int Counter { get; private set; }
 
         public List<ICommand> Commands { get; private set; }
-        public Dictionary<string, int> Labels { get; private set; }
+        public List<Label> Labels { get; private set; }
+        public Dictionary<string, string> Strings { get; private set; }
 
 
 
@@ -16,7 +17,8 @@ namespace VirtualMachine
         {
             Counter = 0;
             Commands = new List<ICommand>();
-            Labels = new Dictionary<string, int>();
+            Labels = new List<Label>();
+            Strings = new Dictionary<string, string>();
         }
 
         public void Run()
@@ -33,20 +35,33 @@ namespace VirtualMachine
             Labels.Clear();
         }
 
-        public void MakeLabel(string label)
+        public void MakeLabel(string name)
         {
-            if (!Labels.ContainsKey(label))
+            if (Labels.Find(x => x.Name == name) == null)
             {
-                Labels.Add(label, Counter);
+                Labels.Add(
+                    new Label()
+                    {
+                        Name = name,
+                        Index = Counter - 1
+                    }
+                );
             }
         }
 
-        public void Jump(string label)
+        public void Jump(string name)
         {
-            if (Labels.ContainsKey(label))
+            Label label = Labels.Find(x => x.Name == name);
+
+            if (label != null)
             {
-                Counter = Labels[label];
+                Counter = label.Index;
             }
+        }
+
+        public void RegisterString(string key, string value)
+        {
+            Strings.Add(key, value);
         }
 
         public void AddCommand(ICommand command)

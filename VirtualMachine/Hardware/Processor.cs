@@ -38,7 +38,7 @@ namespace VirtualMachine
             AddRegister("K1", 1);
         }
 
-        public void AddRegister(string name, byte value = 0, bool readOnly = false)
+        public void AddRegister(string name, int value = 0, bool readOnly = false)
         {
             Registers.Add(name, new Register(name, value, readOnly));
         }
@@ -56,157 +56,179 @@ namespace VirtualMachine
             for (int i = 0; i < lines.Length; i++)
             {
                 string line = lines[i];
-                string[] words = line.Split(new char[] { ' ' });
+                if (string.IsNullOrWhiteSpace(line))
+                {
+                    continue;
+                }
 
-                string commandName = words[0];
+                // Split the line into separate parts.
+                string[] words = line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                if (words.Length == 0)
+                {
+                    continue;
+                }
+
+                // Retrieve the name of the command and any arguments that follow.
+                string name = words[0];
                 string[] arguments = new string[words.Length - 1];
                 Array.Copy(words, 1, arguments, 0, arguments.Length);
 
-                ICommand command = null;
-
-                Console.Write($"{Program.Commands.Count, -2} | ");
-
-                switch (commandName)
-                {
-                    case "SET":
-                        {
-                            Register register = Registers[arguments[0]];
-                            byte value = byte.Parse(arguments[1]);
-
-                            command = new SetCommand(register, value);
-                            break;
-                        }
-                    case "ADD":
-                        {
-                            Register registerOne = Registers[arguments[0]];
-                            Register registerTwo = Registers[arguments[1]];
-                            Register registerOut = Registers[arguments[2]];
-
-                            command = new AddCommand(registerOne, registerTwo, registerOut);
-                            break;
-                        }
-                    case "OUT":
-                        {
-                            Register register = Registers[arguments[0]];
-                        
-                            command = new OutCommand(register);
-                            break;
-                        }
-                    case "HLT":
-                        {
-                            command = new HaltCommand();
-                            break;
-                        }
-                    case "LBL":
-                        {
-                            string label = arguments[0];
-
-                            command = new LabelCommand(label);
-                            Program.MakeLabel(label);
-                            break;
-                        }
-                    case "JMP":
-                        {
-                            string label = arguments[0];
-
-                            command = new JumpCommand(label);
-                            break;
-                        }
-                    case "JET":
-                        {
-                            Register registerOne = Registers[arguments[0]];
-                            Register registerTwo = Registers[arguments[1]];
-                            string label = arguments[2];
-
-                            command = new JumpIfCommand(registerOne, registerTwo, label, JumpCondition.Equal);
-                            break;
-                        }
-                    case "JLT":
-                        {
-                            Register registerOne = Registers[arguments[0]];
-                            Register registerTwo = Registers[arguments[1]];
-                            string label = arguments[2];
-
-                            command = new JumpIfCommand(registerOne, registerTwo, label, JumpCondition.LessThan);
-                            break;
-                        }
-                    case "JLE":
-                        {
-                            Register registerOne = Registers[arguments[0]];
-                            Register registerTwo = Registers[arguments[1]];
-                            string label = arguments[2];
-
-                            command = new JumpIfCommand(registerOne, registerTwo, label, JumpCondition.LessThanOrEqual);
-                            break;
-                        }
-                    case "JGT":
-                        {
-                            Register registerOne = Registers[arguments[0]];
-                            Register registerTwo = Registers[arguments[1]];
-                            string label = arguments[2];
-
-                            command = new JumpIfCommand(registerOne, registerTwo, label, JumpCondition.GreaterThan);
-                            break;
-                        }
-                    case "JGE":
-                        {
-                            Register registerOne = Registers[arguments[0]];
-                            Register registerTwo = Registers[arguments[1]];
-                            string label = arguments[2];
-
-                            command = new JumpIfCommand(registerOne, registerTwo, label, JumpCondition.GreaterThanOrEqual);
-                            break;
-                        }
-                    case "JNE":
-                        {
-                            Register registerOne = Registers[arguments[0]];
-                            Register registerTwo = Registers[arguments[1]];
-                            string label = arguments[2];
-
-                            command = new JumpIfCommand(registerOne, registerTwo, label, JumpCondition.NotEqual);
-                            break;
-                        }
-                    case "CPY":
-                        {
-                            Register registerOne = Registers[arguments[0]];
-                            Register registerTwo = Registers[arguments[1]];
-
-                            command = new CopyCommand(registerOne, registerTwo);
-                            break;
-                        }
-                    default:
-                        break;
-                }
-
+                // Generate a command from the string information.
+                ICommand command = CommandFromString(name, arguments);
+                
                 if (command != null)
                 {
                     Program.AddCommand(command);
-                    command.Dump();
-                }
-                else if (string.IsNullOrWhiteSpace(line))
-                {
-                    Console.CursorLeft = 0;
-                    Console.WriteLine("   | ");
-                }
-                else if (line.StartsWith("#"))
-                {
-                    Console.CursorLeft = 0;
-                    Console.ForegroundColor = ConsoleColor.DarkGreen;
-                    Console.WriteLine("   | " + line);
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                }
-                else
-                {
-                    Console.CursorLeft = 0;
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"   | ERROR LINE {i}");
-                    Console.ForegroundColor = ConsoleColor.Gray;
                 }
             }
 
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine($"Compilation finished {DateTime.Now.TimeOfDay}!");
             Console.ForegroundColor = ConsoleColor.Gray;
+        }
+
+        private ICommand CommandFromString(string name, string[] arguments)
+        {
+            ICommand command = null;
+
+            switch (name)
+            {
+                case "SET":
+                    {
+                        Register register = Registers[arguments[0]];
+                        int value = int.Parse(arguments[1]);
+
+                        command = new SetCommand(register, value);
+                        break;
+                    }
+                case "ADD":
+                    {
+                        Register registerOne = Registers[arguments[0]];
+                        Register registerTwo = Registers[arguments[1]];
+                        Register registerOut = Registers[arguments[2]];
+
+                        command = new AddCommand(registerOne, registerTwo, registerOut);
+                        break;
+                    }
+                case "SUB":
+                    {
+                        Register registerOne = Registers[arguments[0]];
+                        Register registerTwo = Registers[arguments[1]];
+                        Register registerOut = Registers[arguments[2]];
+
+                        command = new SubtractCommand(registerOne, registerTwo, registerOut);
+                        break;
+                    }
+                case "MUL":
+                    {
+                        Register registerOne = Registers[arguments[0]];
+                        Register registerTwo = Registers[arguments[1]];
+                        Register registerOut = Registers[arguments[2]];
+
+                        command = new MultiplyCommand(registerOne, registerTwo, registerOut);
+                        break;
+                    }
+                case "DIV":
+                    {
+                        Register registerOne = Registers[arguments[0]];
+                        Register registerTwo = Registers[arguments[1]];
+                        Register registerOut = Registers[arguments[2]];
+
+                        command = new DivideCommand(registerOne, registerTwo, registerOut);
+                        break;
+                    }
+                case "OUT":
+                    {
+                        if (Registers.ContainsKey(arguments[0]))
+                        {
+                            Register register = Registers[arguments[0]];
+                            command = new OutCommand(register);
+                        }
+                        else
+                        {
+                            command = new OutCommand(arguments[0]);
+                        }
+
+                        break;
+                    }
+                case "HLT":
+                    {
+                        command = new HaltCommand();
+                        break;
+                    }
+                case "JMP":
+                    {
+                        string label = arguments[0];
+
+                        command = new JumpCommand(label);
+                        break;
+                    }
+                case "JIF":
+                    {
+                        Register registerOne = Registers[arguments[0]];
+                        Register registerTwo = Registers[arguments[2]];
+                        string conditionString = arguments[1];
+                        JumpCondition jumpCondition = JumpCondition.Undefined;
+                        switch (conditionString)
+                        {
+                            case "==":
+                                jumpCondition = JumpCondition.Equal;
+                                break;
+                            case "<":
+                                jumpCondition = JumpCondition.LessThan;
+                                break;
+                            case "<=":
+                                jumpCondition = JumpCondition.LessThanOrEqual;
+                                break;
+                            case ">":
+                                jumpCondition = JumpCondition.GreaterThan;
+                                break;
+                            case ">=":
+                                jumpCondition = JumpCondition.GreaterThanOrEqual;
+                                break;
+                            case "!=":
+                                jumpCondition = JumpCondition.NotEqual;
+                                break;
+                        }
+
+                        string label = arguments[3];
+
+                        command = new JumpIfCommand(registerOne, registerTwo, label, jumpCondition);
+                        break;
+                    }
+                case "CPY":
+                    {
+                        Register registerOne = Registers[arguments[0]];
+                        Register registerTwo = Registers[arguments[1]];
+
+                        command = new CopyCommand(registerOne, registerTwo);
+                        break;
+                    }
+                default:
+                    if (name == "str:")
+                    {
+                        string stringKey = arguments[0];
+                        string stringValue = string.Empty;
+                        for (int i = 1; i < arguments.Length; i++)
+                        {
+                            stringValue += arguments[i];
+                            if (i < arguments.Length)
+                            {
+                                stringValue += " ";
+                            }
+                        }
+
+                        Program.RegisterString(stringKey, stringValue);
+                    }
+                    else if (name.Length > 1 && name.EndsWith(":"))
+                    {
+                        Program.MakeLabel(name.Substring(0, name.Length - 1));
+                        break;
+                    }
+                    break;
+            }
+
+            return command;
         }
 
         public void DoFile(string path)

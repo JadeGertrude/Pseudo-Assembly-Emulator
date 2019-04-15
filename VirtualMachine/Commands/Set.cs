@@ -5,10 +5,10 @@ namespace VirtualMachine.Commands
     public class SetCommand : ICommand
     {
         private Register Register { get; set; }
-        private byte Value { get; set; }
+        private int Value { get; set; }
 
 
-        public SetCommand(Register register, byte value)
+        public SetCommand(Register register, int value)
         {
             Register = register;
             Value = value;
@@ -17,11 +17,6 @@ namespace VirtualMachine.Commands
         public void Execute(ProgramFile program)
         {
             Register.Value = Value;
-        }
-
-        public void Dump()
-        {
-            Console.WriteLine($"SET {Register.Name} {Value:X}");
         }
     }
 }
